@@ -18,7 +18,6 @@ export const dropdownOptions = [
       },
     ],
   },
-  ,
   {
     "Interaction Errors": [
       {

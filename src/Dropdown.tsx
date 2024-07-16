@@ -1,16 +1,17 @@
 import { h, FunctionalComponent } from "preact";
-import { useState } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
+import { StateUpdater } from "preact/hooks";
 
 interface DropdownOption {
   id: string | number;
   name: string;
-  [key: string]: any; // Allow for additional properties
+  [key: string]: any;
 }
 
 interface DropdownProps {
-  options: DropdownOption[];
-  selectedOption: DropdownOption | null;
-  onSelect: (option: DropdownOption) => void;
+  options: any[];
+  selectedOption?: DropdownOption | null;
+  onSelect: StateUpdater<null>;
   placeholder?: string;
   renderOption?: (option: DropdownOption) => h.JSX.Element;
 }
@@ -28,7 +29,7 @@ const Dropdown: FunctionalComponent<DropdownProps> = ({
     setIsOpen(!isOpen);
   };
 
-  const handleSelect = (option: DropdownOption) => {
+  const handleSelect = (option: any) => {
     onSelect(option);
     setIsOpen(false);
   };
@@ -36,7 +37,7 @@ const Dropdown: FunctionalComponent<DropdownProps> = ({
   const dropdownStyles = {
     dropdownComp: {
       position: "relative",
-      width: "200px",
+      width: "100%",
     },
     dropdownToggle: {
       width: "100%",
@@ -55,13 +56,17 @@ const Dropdown: FunctionalComponent<DropdownProps> = ({
       border: "1px solid #ddd",
       borderRadius: "4px",
       boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-      zIndex: 1,
+      zIndex: 999,
     },
     dropdownItem: {
       padding: "10px",
       cursor: "pointer",
     },
   };
+
+  useEffect(() => {
+    console.log("selectedOption", selectedOption);
+  }, [selectedOption]);
 
   return (
     <div style={dropdownStyles.dropdownComp}>
@@ -85,6 +90,7 @@ const Dropdown: FunctionalComponent<DropdownProps> = ({
                 style={dropdownStyles.dropdownItem}
                 onMouseDown={(e) => {
                   e.preventDefault();
+                  // console.log("option", option);
                   handleSelect(option);
                 }}
               >

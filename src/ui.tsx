@@ -11,14 +11,51 @@ import {
 } from "@create-figma-plugin/ui";
 import { emit, on } from "@create-figma-plugin/utilities";
 import { h, JSX } from "preact";
-import { useState } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 import { useAtom } from "jotai";
 import { noteAtom, isSelectionAtom } from "./atoms";
 import Dropdown from "./Dropdown";
+import { dropdownOptions } from "./DropdownOptions";
 
 function Plugin() {
   const [note, setNote] = useAtom(noteAtom);
   const [, setIsSelection] = useState<boolean>(false);
+  const [selectedSection, setSelectedSection]: any = useState(null);
+  const [predefinedNotes, setPredefinedNotes] = useState<any>([]);
+  const [selectedNote, setSelectedNote] = useState(null);
+
+  const sections = dropdownOptions.map((options, index) => {
+    const sectionTitle = Object.keys(options)[0];
+    return {
+      id: index,
+      name: sectionTitle,
+    };
+  });
+
+  useEffect(() => {
+    console.log("selectedOption", selectedSection);
+    if (selectedSection) {
+      const sectionName = selectedSection.name;
+      const notesSection: any = dropdownOptions.find(
+        (element) => Object.keys(element)[0] === sectionName
+      );
+      if (!notesSection) return;
+      const notesSectionElement = notesSection[sectionName] || null;
+      const sectionData = notesSection[sectionName].map(
+        (element: any, index: number) => {
+          return {
+            id: index,
+            name: element.value,
+          };
+        }
+      );
+      setPredefinedNotes(sectionData);
+    }
+  }, [selectedSection]);
+
+  useEffect(() => {
+    console.log("selectedNote", selectedNote);
+  }, [selectedNote]);
 
   const data = {
     note: note,
@@ -48,23 +85,17 @@ function Plugin() {
     <Container space="medium">
       <VerticalSpace space="large" />
       <Dropdown
-        options={[
-          { id: "error", name: "Error" },
-          { id: "warning", name: "Warning" },
-          { id: "notice", name: "Notice" },
-          { id: "report", name: "Report" },
-        ]}
-        selectedOption={{ id: "error", name: "Error" }}
-        onSelect={() => console.log("yey")}
+        options={sections}
+        onSelect={setSelectedSection}
+        selectedOption={selectedSection}
+        placeholder="Note type"
       />
       <VerticalSpace space="large" />
       <Dropdown
-        options={[
-          { id: "yes", name: "Yes" },
-          { id: "no", name: "No" },
-        ]}
-        selectedOption={{ id: "yes", name: "Yes" }}
-        onSelect={() => console.log("yey-yey")}
+        options={predefinedNotes}
+        onSelect={setSelectedNote}
+        selectedOption={selectedNote}
+        placeholder="Note content"
       />
       <div>
         <VerticalSpace space="medium" />
