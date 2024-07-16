@@ -427,7 +427,7 @@ var init_main = __esm({
       await figma.loadFontAsync({ family: "Inter", style: "Bold" });
     };
     showUI({
-      height: 360,
+      height: 380,
       width: 300
     });
   }

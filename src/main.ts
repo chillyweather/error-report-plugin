@@ -63,7 +63,7 @@ export default async function () {
 }
 
 showUI({
-  height: 360,
+  height: 380,
   width: 300,
 });
 
