@@ -1,6 +1,7 @@
 import { on, emit, showUI } from "@create-figma-plugin/utilities";
 import { addNote } from "./addNote";
 import { addFrame } from "./addFrame";
+import { buildReport } from "./buildReport";
 
 const loadFonts = async () => {
   await figma.loadFontAsync({ family: "Inter", style: "Regular" });
@@ -21,15 +22,21 @@ export default async function () {
     emitSelection(selection);
   });
 
-  on("ERROR", (data) => {
+  on("MAJOR", (data) => {
     selection.forEach((element) => {
-      handleNoteData(element, data, "error");
+      handleNoteData(element, data, "major");
     });
   });
 
-  on("WARNING", (data) => {
+  on("MINOR", (data) => {
     selection.forEach((element) => {
-      handleNoteData(element, data, "warning");
+      handleNoteData(element, data, "minor");
+    });
+  });
+
+  on("OFI", (data) => {
+    selection.forEach((element) => {
+      handleNoteData(element, data, "ofi");
     });
   });
 
@@ -39,32 +46,45 @@ export default async function () {
     });
   });
 
-  on("REPORT", () => {
-    const keys = document.getPluginDataKeys();
-    for (const key of keys) {
-      const value = document.getPluginData(key);
-      console.log(key, value);
-      // document.setPluginData(key, "");
-    }
+  on("ERASE", () => {
+    const keys = figma.root.getPluginDataKeys();
+    keys.forEach((key) => figma.root.setPluginData(key, ""));
   });
 
+  on("REPORT", () => buildReport());
+
   function handleNoteData(element: SceneNode, data: any, type: string) {
-    (data.link = {
+    data.link = {
       type: "NODE",
       value: element.id,
-    }),
-      document.setPluginData(`${type}_${element.id}`, JSON.stringify(data));
+    };
+
+    document.setPluginData(`${element.id}_${type}`, JSON.stringify(data));
+
     addFrame(element, type);
     const note = addNote(element, type);
+
+    if (data.title) {
+      const titleText = figma.createText();
+      titleText.characters = data.title;
+      titleText.fontName = {
+        family: "Inter",
+        style: "Bold",
+      };
+      note.appendChild(titleText);
+    }
+
     const noteText = figma.createText();
-    noteText.characters = data.note;
+    noteText.characters = `${
+      data.selectedNote ? data.selectedNote + "\n" : ""
+    }${data.note}`;
     note.appendChild(noteText);
   }
 }
 
 showUI({
-  height: 380,
-  width: 300,
+  height: 430,
+  width: 400,
 });
 
 function emitSelection(selection: readonly SceneNode[]) {

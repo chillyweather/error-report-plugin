@@ -14,7 +14,7 @@ export function addFrame(selection: SceneNode, type: string) {
 
   frame.strokeWeight = 14;
   frame.strokeAlign = "OUTSIDE";
-  if (type === "error") {
+  if (type === "major") {
     frame.strokes = [
       {
         type: "SOLID",
@@ -30,7 +30,24 @@ export function addFrame(selection: SceneNode, type: string) {
     ];
     frame.fills = [];
   }
-  if (type === "warning") {
+  if (type === "minor") {
+    frame.strokes = [
+      {
+        type: "SOLID",
+        visible: true,
+        opacity: 1,
+        blendMode: "NORMAL",
+        color: {
+          r: 1,
+          g: 0.7139676809310913,
+          b: 0.3781901001930237,
+        },
+        boundVariables: {},
+      },
+    ];
+    frame.fills = [];
+  }
+  if (type === "ofi") {
     frame.strokes = [
       {
         type: "SOLID",

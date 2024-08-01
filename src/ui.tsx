@@ -14,15 +14,17 @@ import { h, JSX } from "preact";
 import { useEffect, useState } from "preact/hooks";
 import { useAtom } from "jotai";
 import { noteAtom, isSelectionAtom } from "./atoms";
-import Dropdown from "./Dropdown";
+import { Dropdown, DropdownOption } from "tidy-ds";
 import { dropdownOptions } from "./DropdownOptions";
 
 function Plugin() {
   const [note, setNote] = useAtom(noteAtom);
   const [, setIsSelection] = useState<boolean>(false);
-  const [selectedSection, setSelectedSection]: any = useState(null);
-  const [predefinedNotes, setPredefinedNotes] = useState<any>([]);
-  const [selectedNote, setSelectedNote] = useState(null);
+  const [selectedSection, setSelectedSection] = useState<DropdownOption | null>(
+    null
+  );
+  const [predefinedNotes, setPredefinedNotes] = useState<DropdownOption[]>([]);
+  const [selectedNote, setSelectedNote] = useState<DropdownOption | null>(null);
 
   const sections = dropdownOptions.map((options, index) => {
     const sectionTitle = Object.keys(options)[0];
@@ -36,42 +38,49 @@ function Plugin() {
     console.log("selectedOption", selectedSection);
     if (selectedSection) {
       const sectionName = selectedSection.name;
-      const notesSection: any = dropdownOptions.find(
+      const notesSection = dropdownOptions.find(
         (element) => Object.keys(element)[0] === sectionName
       );
       if (!notesSection) return;
-      const notesSectionElement = notesSection[sectionName] || null;
-      const sectionData = notesSection[sectionName].map(
-        (element: any, index: number) => {
-          return {
-            id: index,
-            name: element.value,
-          };
-        }
-      );
+
+      const sectionData = (
+        notesSection[sectionName as keyof typeof notesSection] as {
+          value: string;
+        }[]
+      ).map((element, index) => {
+        return {
+          id: index,
+          name: element.value,
+        };
+      });
       setPredefinedNotes(sectionData);
     }
   }, [selectedSection]);
 
-  useEffect(() => {
-    console.log("selectedNote", selectedNote);
-  }, [selectedNote]);
-
   const data = {
+    title: selectedSection?.name,
+    selectedNote: selectedNote?.name,
     note: note,
   };
 
-  const handleErrorClick = () => {
-    emit("ERROR", data);
+  const handleMajorNCClick = () => {
+    emit("MAJOR", data);
   };
-  const handleWarningClick = () => {
-    emit("WARNING", data);
+
+  const handleMinorNCClick = () => {
+    emit("MINOR", data);
+  };
+  const handleOfiClick = () => {
+    emit("OFI", data);
   };
   const handleNoticeClick = () => {
     emit("NOTICE", data);
   };
   const handleReport = () => {
     emit("REPORT");
+  };
+  const handleEraseReport = () => {
+    emit("ERASE");
   };
 
   on("SELECTION", () => {
@@ -110,38 +119,62 @@ function Plugin() {
           style={{ height: "84px" }}
         />
         <VerticalSpace space="small" />
-
         <VerticalSpace space="extraLarge" />
         <Columns space="extraSmall">
           <Button
             fullWidth
-            onClick={handleErrorClick}
-            style={{ backgroundColor: "darkRed" }}
-          >
-            Error
-          </Button>
-          <Button
-            fullWidth
-            onClick={handleWarningClick}
-            style={{
-              backgroundColor: "darkOrange",
-            }}
-          >
-            Warning
-          </Button>
-          <Button
-            fullWidth
             onClick={handleNoticeClick}
             style={{
-              backgroundColor: "lightSlateGray",
+              backgroundColor: "#C4FA8E",
+              color: "#515151",
             }}
           >
-            Notice
+            Compliant
+          </Button>
+          <Button
+            fullWidth
+            onClick={handleOfiClick}
+            style={{
+              backgroundColor: "#FFFF02",
+              color: "#515151",
+            }}
+          >
+            OFI
+          </Button>
+          <Button
+            fullWidth
+            onClick={handleMinorNCClick}
+            style={{
+              backgroundColor: "#FFBF01",
+              color: "#515151",
+            }}
+          >
+            Minor N/C
+          </Button>
+          <Button
+            fullWidth
+            onClick={handleMajorNCClick}
+            style={{
+              backgroundColor: "#FD8181",
+              color: "#515151",
+            }}
+          >
+            Major N/C
           </Button>
         </Columns>
         <VerticalSpace space="extraLarge" />
         <Button fullWidth onClick={handleReport}>
           Generate report
+        </Button>{" "}
+        <VerticalSpace space="medium" />
+        <Button
+          fullWidth
+          onClick={handleEraseReport}
+          style={{
+            backgroundColor: "#C11700",
+          }}
+        >
+          Erase report
         </Button>
       </div>
     </Container>
