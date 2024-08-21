@@ -1,7 +1,10 @@
 import { REPORT_FRAME_WIDTH } from "../constants";
 import { buildAutoLayoutFrame } from "./buildAutoLayoutFrame";
+import { buildHeaderFrame } from "./buildHeaderFrame";
 import { buildLayoutFrames } from "./buildLayoutFrames";
+import { buildNotesElement } from "./buildNotesElement";
 import { buildScreenShotFrame } from "./buildScreenShotFrame";
+import { buildTextDataFrame } from "./buildTextDataFrame";
 export function buildReport() {
   const document = figma.root;
   let reportPage = figma.root.children.find(
@@ -13,78 +16,38 @@ export function buildReport() {
   }
   const keys = document.getPluginDataKeys();
 
+  const headerFrame = buildHeaderFrame(keys);
   const { criticalFrame, reportFrame, highFrame, mediumFrame, lowFrame } =
     buildLayoutFrames(keys);
 
-  appendSections(criticalFrame, reportFrame, highFrame, mediumFrame, lowFrame);
+  appendSections(
+    headerFrame,
+    criticalFrame,
+    reportFrame,
+    highFrame,
+    mediumFrame,
+    lowFrame
+  );
 
   for (const key of keys) {
+    const [nodeId, severity] = key.split("_");
     const value = document.getPluginData(key);
-    console.log("key, value", key, value);
-    const [id, type] = key.split("_");
     const textContentJSON = JSON.parse(value);
     const title = textContentJSON.title;
     const selectedNote = textContentJSON.selectedNote;
     const note = textContentJSON.note;
-    const severity = textContentJSON.severity;
     const noteCharacters = `${selectedNote ? selectedNote + "\n" : ""}${
       note ?? ""
     }`;
 
-    const textDataFrame = buildAutoLayoutFrame(key, "VERTICAL", 0, 0, 24);
-
-    if (title) {
-      const noteTitle = figma.createText();
-      noteTitle.characters = title;
-      noteTitle.fontName = {
-        family: "Inter",
-        style: "Regular",
-      };
-      noteTitle.fontSize = 50;
-      textDataFrame.appendChild(noteTitle);
-    }
-
-    if (selectedNote || note) {
-      const noteText = figma.createText();
-      noteText.fontName = {
-        family: "Inter",
-        style: "Regular",
-      };
-      noteText.fontSize = 35;
-      noteText.characters = noteCharacters;
-      textDataFrame.appendChild(noteText);
-    }
-
-    const notesFrame = buildAutoLayoutFrame("notes", "VERTICAL", 0, 0, 12);
-    const notesTitle = figma.createText();
-    notesTitle.fontName = {
-      family: "Inter",
-      style: "Regular",
-    };
-    notesTitle.fontSize = 50;
-    notesTitle.characters = "Notes";
-    notesFrame.appendChild(notesTitle);
-
-    const notesContent = figma.createText();
-    notesContent.fontName = {
-      family: "Inter",
-      style: "Regular",
-    };
-    notesContent.fontSize = 20;
-    notesContent.characters = "Your notes here...";
-    notesFrame.appendChild(notesContent);
-
-    const screenShotFrame = buildScreenShotFrame();
-    const reportElementFrame = buildAutoLayoutFrame(
+    const reportElementFrame = buildOneReportElementFrame(
       key,
-      "HORIZONTAL",
-      0,
-      0,
-      190
+      title,
+      selectedNote,
+      note,
+      noteCharacters,
+      nodeId
     );
-    reportElementFrame.appendChild(textDataFrame);
-    reportElementFrame.appendChild(screenShotFrame);
-    reportElementFrame.appendChild(notesFrame);
 
     if (textContentJSON.severity === "critical" && criticalFrame) {
       criticalFrame.appendChild(reportElementFrame);
@@ -99,40 +62,55 @@ export function buildReport() {
   }
 }
 
+function buildOneReportElementFrame(
+  key: string,
+  title: any,
+  selectedNote: any,
+  note: any,
+  noteCharacters: string,
+  nodeId: string
+) {
+  const textDataFrame = buildTextDataFrame(
+    key,
+    title,
+    selectedNote,
+    note,
+    noteCharacters,
+    nodeId
+  );
+
+  const notesFrame = buildNotesElement();
+
+  const screenShotFrame = buildScreenShotFrame();
+  const reportElementFrame = buildAutoLayoutFrame(key, "HORIZONTAL", 0, 0, 190);
+  reportElementFrame.appendChild(textDataFrame);
+  reportElementFrame.appendChild(screenShotFrame);
+  reportElementFrame.appendChild(notesFrame);
+  return reportElementFrame;
+}
+
 function appendSections(
+  headerFrame: FrameNode,
   criticalFrame: FrameNode | null,
   reportFrame: FrameNode,
   highFrame: FrameNode | null,
   mediumFrame: FrameNode | null,
   lowFrame: FrameNode | null
 ) {
-  if (criticalFrame) {
-    appendAndResize(
-      criticalFrame,
-      reportFrame,
-      REPORT_FRAME_WIDTH,
-      criticalFrame.height
-    );
-  }
-  if (highFrame) {
-    appendAndResize(
-      highFrame,
-      reportFrame,
-      REPORT_FRAME_WIDTH,
-      highFrame.height
-    );
-  }
-  if (mediumFrame) {
-    appendAndResize(
-      mediumFrame,
-      reportFrame,
-      REPORT_FRAME_WIDTH,
-      mediumFrame.height
-    );
-  }
-  if (lowFrame) {
-    appendAndResize(lowFrame, reportFrame, REPORT_FRAME_WIDTH, lowFrame.height);
-  }
+  const framesToAppend = [
+    { frame: headerFrame, name: "Header" },
+    { frame: criticalFrame, name: "Critical" },
+    { frame: highFrame, name: "High" },
+    { frame: mediumFrame, name: "Medium" },
+    { frame: lowFrame, name: "Low" },
+  ];
+
+  framesToAppend.forEach(({ frame, name }) => {
+    if (frame) {
+      appendAndResize(frame, reportFrame, REPORT_FRAME_WIDTH, frame.height);
+      console.log(`${name} frame appended and resized`);
+    }
+  });
 }
 
 function appendAndResize(
