@@ -1,7 +1,7 @@
 import { on, emit, showUI } from "@create-figma-plugin/utilities";
 import { addNote } from "./addNote";
 import { addFrame } from "./addFrame";
-import { buildReport } from "./buildReport";
+import { buildReport } from "./report-building-functions/buildReport";
 
 const loadFonts = async () => {
   await figma.loadFontAsync({ family: "Inter", style: "Regular" });
@@ -22,27 +22,27 @@ export default async function () {
     emitSelection(selection);
   });
 
-  on("MAJOR", (data) => {
+  on("CRITICAL", (data) => {
     selection.forEach((element) => {
-      handleNoteData(element, data, "major");
+      handleNoteData(element, data, "critical");
     });
   });
 
-  on("MINOR", (data) => {
+  on("HIGH", (data) => {
     selection.forEach((element) => {
-      handleNoteData(element, data, "minor");
+      handleNoteData(element, data, "high");
     });
   });
 
-  on("OFI", (data) => {
+  on("MEDIUM", (data) => {
     selection.forEach((element) => {
-      handleNoteData(element, data, "ofi");
+      handleNoteData(element, data, "medium");
     });
   });
 
-  on("NOTICE", (data) => {
+  on("LOW", (data) => {
     selection.forEach((element) => {
-      handleNoteData(element, data, "notice");
+      handleNoteData(element, data, "low");
     });
   });
 
@@ -58,6 +58,7 @@ export default async function () {
       type: "NODE",
       value: element.id,
     };
+    data.severity = type;
 
     document.setPluginData(`${element.id}_${type}`, JSON.stringify(data));
 

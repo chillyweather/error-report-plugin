@@ -1,1 +1,1 @@
-# Tool for generating error reports
+# Tool for auditing designs in figma

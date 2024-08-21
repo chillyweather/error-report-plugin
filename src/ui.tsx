@@ -64,17 +64,17 @@ function Plugin() {
   };
 
   const handleMajorNCClick = () => {
-    emit("MAJOR", data);
+    emit("CRITICAL", data);
   };
 
   const handleMinorNCClick = () => {
-    emit("MINOR", data);
+    emit("HIGH", data);
   };
   const handleOfiClick = () => {
-    emit("OFI", data);
+    emit("MEDIUM", data);
   };
   const handleNoticeClick = () => {
-    emit("NOTICE", data);
+    emit("LOW", data);
   };
   const handleReport = () => {
     emit("REPORT");
@@ -129,7 +129,7 @@ function Plugin() {
               color: "#515151",
             }}
           >
-            Compliant
+            Low
           </Button>
           <Button
             fullWidth
@@ -139,7 +139,7 @@ function Plugin() {
               color: "#515151",
             }}
           >
-            OFI
+            Medium
           </Button>
           <Button
             fullWidth
@@ -149,7 +149,7 @@ function Plugin() {
               color: "#515151",
             }}
           >
-            Minor N/C
+            High
           </Button>
           <Button
             fullWidth
@@ -159,7 +159,7 @@ function Plugin() {
               color: "#515151",
             }}
           >
-            Major N/C
+            Critical
           </Button>
         </Columns>
         <VerticalSpace space="extraLarge" />

@@ -6,7 +6,7 @@ export function addNote(selection: SceneNode, type: string) {
   note.resize(selection.width, 200);
   note.x = selection.x;
   note.y = selection.y + selection.height + 32;
-  if (type === "major") {
+  if (type === "critical") {
     note.fills = [
       {
         type: "SOLID",
@@ -21,7 +21,7 @@ export function addNote(selection: SceneNode, type: string) {
       },
     ];
   }
-  if (type === "minor") {
+  if (type === "high") {
     note.fills = [
       {
         type: "SOLID",
@@ -37,7 +37,7 @@ export function addNote(selection: SceneNode, type: string) {
       },
     ];
   }
-  if (type === "ofi") {
+  if (type === "medium") {
     note.fills = [
       {
         type: "SOLID",
@@ -53,7 +53,7 @@ export function addNote(selection: SceneNode, type: string) {
       },
     ];
   }
-  if (type === "notice") {
+  if (type === "low") {
     note.fills = [
       {
         type: "SOLID",
@@ -62,8 +62,8 @@ export function addNote(selection: SceneNode, type: string) {
         blendMode: "NORMAL",
         color: {
           r: 0.8213211297988892,
-          g: 0.9546784162521362,
-          b: 0.9839518070220947,
+          g: 0.9839518070220947,
+          b: 0.864689290523529,
         },
         boundVariables: {},
       },

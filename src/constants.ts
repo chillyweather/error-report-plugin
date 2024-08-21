@@ -1,0 +1,3 @@
+const REPORT_FRAME_WIDTH = 1920;
+
+export { REPORT_FRAME_WIDTH };
