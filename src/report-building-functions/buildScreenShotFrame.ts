@@ -18,7 +18,10 @@ export async function buildScreenShotFrame(nodeId: string) {
     return screenShotFrame;
   }
 
-  await selectionToImage(foundNode, screenShotFrame);
-
-  return screenShotFrame;
+  try {
+    await selectionToImage(foundNode, screenShotFrame);
+    return screenShotFrame;
+  } catch (error) {
+    screenShotFrame.remove();
+  }
 }

@@ -8,6 +8,7 @@ export function buildTextDataFrame(
   noteCharacters: string,
   nodeId: string
 ) {
+  const TEXT_WIDTH = 464;
   console.log("nodeId", nodeId);
   const textDataFrame = buildAutoLayoutFrame(key, "VERTICAL", 0, 0, 24);
 
@@ -19,10 +20,29 @@ export function buildTextDataFrame(
       style: "Regular",
     };
     noteTitle.fontSize = 50;
-    noteTitle.hyperlink = {
-      type: "NODE",
-      value: nodeId,
-    };
+    try {
+      noteTitle.hyperlink = {
+        type: "NODE",
+        value: nodeId,
+      };
+    } catch (error) {
+      noteTitle.characters = `${noteTitle.characters} (no element with id ${nodeId} found)`;
+      noteTitle.fills = [
+        {
+          type: "SOLID",
+          visible: true,
+          opacity: 1,
+          blendMode: "NORMAL",
+          color: {
+            r: 1,
+            g: 0,
+            b: 0,
+          },
+          boundVariables: {},
+        },
+      ];
+    }
+    noteTitle.resize(TEXT_WIDTH, noteTitle.height);
     textDataFrame.appendChild(noteTitle);
   }
 
@@ -34,8 +54,9 @@ export function buildTextDataFrame(
     };
     noteText.fontSize = 35;
     noteText.characters = noteCharacters;
+    noteText.resize(TEXT_WIDTH, noteText.height);
     textDataFrame.appendChild(noteText);
   }
-  textDataFrame.resize(464, textDataFrame.height);
+  // textDataFrame.resize(TEXT_WIDTH, textDataFrame.height);
   return textDataFrame;
 }
