@@ -168,7 +168,7 @@ function Plugin() {
         <VerticalSpace space="medium" />
         <Button
           fullWidth
-          onClick={handleEraseReport}
+          onDblClick={handleEraseReport}
           style={{
             backgroundColor: "#C11700",
           }}

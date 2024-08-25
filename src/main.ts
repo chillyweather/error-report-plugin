@@ -83,7 +83,9 @@ export default async function () {
     keys.forEach((key) => figma.root.setPluginData(key, ""));
   });
 
-  on("REPORT", () => buildReport(selection));
+  on("REPORT", async () => {
+    const reportFrame = await buildReport(selection);
+  });
 
   function checkSelection(selection: readonly SceneNode[]): boolean {
     if (selection.length === 0) {
