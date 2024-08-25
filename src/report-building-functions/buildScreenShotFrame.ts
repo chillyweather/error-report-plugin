@@ -1,20 +1,24 @@
-export function buildScreenShotFrame() {
+import selectionToImage from "./selectionToImage";
+export async function buildScreenShotFrame(nodeId: string) {
   const screenShotFrame = figma.createFrame();
   screenShotFrame.name = "screenshot";
   screenShotFrame.resize(412, 322);
-  screenShotFrame.fills = [
-    {
-      type: "SOLID",
-      visible: true,
-      opacity: 1,
-      blendMode: "NORMAL",
-      color: {
-        r: 0.8509804010391235,
-        g: 0.8509804010391235,
-        b: 0.8509804010391235,
-      },
-      boundVariables: {},
-    },
-  ];
+
+  const foundNode = figma.getNodeById(nodeId);
+  if (
+    !foundNode ||
+    !(
+      foundNode.type === "COMPONENT" ||
+      foundNode.type === "FRAME" ||
+      foundNode.type === "INSTANCE" ||
+      foundNode.type === "COMPONENT_SET" ||
+      foundNode.type === "GROUP"
+    )
+  ) {
+    return screenShotFrame;
+  }
+
+  await selectionToImage(foundNode, screenShotFrame);
+
   return screenShotFrame;
 }

@@ -5,7 +5,7 @@ import { buildLayoutFrames } from "./buildLayoutFrames";
 import { buildNotesElement } from "./buildNotesElement";
 import { buildScreenShotFrame } from "./buildScreenShotFrame";
 import { buildTextDataFrame } from "./buildTextDataFrame";
-export function buildReport() {
+export async function buildReport(selction: readonly SceneNode[]) {
   const document = figma.root;
   let reportPage = figma.root.children.find(
     (page) => page.name === "audit result"
@@ -40,7 +40,7 @@ export function buildReport() {
       note ?? ""
     }`;
 
-    const reportElementFrame = buildOneReportElementFrame(
+    const reportElementFrame = await buildOneReportElementFrame(
       key,
       title,
       selectedNote,
@@ -62,7 +62,7 @@ export function buildReport() {
   }
 }
 
-function buildOneReportElementFrame(
+async function buildOneReportElementFrame(
   key: string,
   title: any,
   selectedNote: any,
@@ -81,7 +81,7 @@ function buildOneReportElementFrame(
 
   const notesFrame = buildNotesElement();
 
-  const screenShotFrame = buildScreenShotFrame();
+  const screenShotFrame = await buildScreenShotFrame(nodeId);
   const reportElementFrame = buildAutoLayoutFrame(key, "HORIZONTAL", 0, 0, 190);
   reportElementFrame.appendChild(textDataFrame);
   reportElementFrame.appendChild(screenShotFrame);

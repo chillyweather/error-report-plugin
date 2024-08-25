@@ -5,15 +5,14 @@ import {
   Muted,
   render,
   Text,
-  Textbox,
   TextboxMultiline,
   VerticalSpace,
 } from "@create-figma-plugin/ui";
 import { emit, on } from "@create-figma-plugin/utilities";
-import { h, JSX } from "preact";
+import { h } from "preact";
 import { useEffect, useState } from "preact/hooks";
 import { useAtom } from "jotai";
-import { noteAtom, isSelectionAtom } from "./atoms";
+import { noteAtom } from "./atoms";
 import { Dropdown, DropdownOption } from "tidy-ds";
 import { dropdownOptions } from "./DropdownOptions";
 

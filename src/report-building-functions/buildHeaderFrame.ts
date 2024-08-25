@@ -14,6 +14,7 @@ export function buildHeaderFrame(keys: string[]) {
   const separatorTwo = figma.createLine();
   addMetaDataContent(metadataFrame);
   addIntroContent(introFrame);
+  addCounterContent(countersFrame, keys);
   for (const element of [
     metadataFrame,
     separatorOne,
@@ -27,9 +28,50 @@ export function buildHeaderFrame(keys: string[]) {
   return headerFrame;
 }
 
-function addCounterContent(countersFrame: FrameNode) {
-  const lowCounter = figma.createFrame();
-  lowCounter.resize(268, 268);
+function addCounterContent(countersFrame: FrameNode, keys: string[]) {
+  const lowKeys = keys.filter((key) => key.includes("low")).length;
+  const mediumKeys = keys.filter((key) => key.includes("medium")).length;
+  const highKeys = keys.filter((key) => key.includes("high")).length;
+  const criticalKeys = keys.filter((key) => key.includes("critical")).length;
+  const lowCounter = buildOneCounter("Low", "52CE50", lowKeys);
+  const mediumCounter = buildOneCounter("Medium", "F5EF4B", mediumKeys);
+  const highCounter = buildOneCounter("High", "F5AE4B", highKeys);
+  const criticalCounter = buildOneCounter("Critical", "FF0000", criticalKeys);
+  [lowCounter, mediumCounter, highCounter, criticalCounter].forEach((node) =>
+    countersFrame.appendChild(node)
+  );
+  countersFrame.primaryAxisAlignItems = "SPACE_BETWEEN";
+}
+
+function buildOneCounter(name: string, color: string, count: number) {
+  const counter = buildAutoLayoutFrame(
+    `report-counter-${name.toLowerCase()}`,
+    "VERTICAL",
+    0,
+    0,
+    0
+  );
+  counter.resize(268, 268);
+  counter.cornerRadius = 999;
+  if (color) {
+    const rgbColor = convertHexColorToRgbColor(color);
+    if (rgbColor) {
+      counter.fills = [
+        {
+          type: "SOLID",
+          color: rgbColor,
+        },
+      ];
+    }
+  }
+  const counterTitle = figma.createText();
+  counterTitle.characters = `${count}`;
+  counterTitle.fontSize = 70;
+  counterTitle.fontName = { family: "Inter", style: "Bold" };
+  counter.primaryAxisAlignItems = "CENTER";
+  counter.counterAxisAlignItems = "CENTER";
+  counter.appendChild(counterTitle);
+  return counter;
 }
 
 function addIntroContent(introFrame: FrameNode) {

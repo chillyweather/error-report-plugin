@@ -8,10 +8,19 @@ const loadFonts = async () => {
   await figma.loadFontAsync({ family: "Inter", style: "Bold" });
 };
 
+const allowedTypes = [
+  "FRAME",
+  "INSTANCE",
+  "COMPONENT",
+  "COMPONENT_SET",
+  "GROUP",
+];
+
 export default async function () {
   await loadFonts();
   const document = figma.root;
   let selection = figma.currentPage.selection;
+  let isSelectionValid: boolean;
 
   figma.on("run", () => {
     emitSelection(selection);
@@ -23,24 +32,46 @@ export default async function () {
   });
 
   on("CRITICAL", (data) => {
+    isSelectionValid = checkSelection(selection);
+    if (!isSelectionValid) {
+      return;
+    }
     selection.forEach((element) => {
       handleNoteData(element, data, "critical");
     });
   });
 
   on("HIGH", (data) => {
+    isSelectionValid = checkSelection(selection);
+    if (!isSelectionValid) {
+      return;
+    }
     selection.forEach((element) => {
       handleNoteData(element, data, "high");
     });
   });
 
   on("MEDIUM", (data) => {
+    isSelectionValid = checkSelection(selection);
+    if (!isSelectionValid) {
+      return;
+    }
     selection.forEach((element) => {
       handleNoteData(element, data, "medium");
     });
   });
 
   on("LOW", (data) => {
+    console.log("selection[0].type", selection[0].type);
+    console.log(
+      "selection[0].type in allowedTypes",
+      selection[0].type in allowedTypes
+    );
+    isSelectionValid = checkSelection(selection);
+    console.log("isSelectionValid", isSelectionValid);
+    if (!isSelectionValid) {
+      return;
+    }
     selection.forEach((element) => {
       handleNoteData(element, data, "low");
     });
@@ -51,7 +82,21 @@ export default async function () {
     keys.forEach((key) => figma.root.setPluginData(key, ""));
   });
 
-  on("REPORT", () => buildReport());
+  on("REPORT", () => buildReport(selection));
+
+  function checkSelection(selection: readonly SceneNode[]): boolean {
+    if (selection.length === 0) {
+      figma.notify("Please select at least one node");
+      return false;
+    } else if (selection.length > 1) {
+      figma.notify("Please select only one node");
+      return false;
+    } else if (!allowedTypes.includes(selection[0].type)) {
+      figma.notify("Please select a frame, instance or component");
+      return false;
+    }
+    return true;
+  }
 
   function handleNoteData(element: SceneNode, data: any, type: string) {
     data.link = {
