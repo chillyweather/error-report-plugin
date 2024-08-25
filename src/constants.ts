@@ -16,4 +16,7 @@ const ERROR_COLOR = [
     boundVariables: {},
   },
 ];
-export { REPORT_FRAME_WIDTH, TEXT_WIDTH, ERROR_COLOR };
+
+const REPORT_PAGE = "📊 Audit result";
+
+export { REPORT_FRAME_WIDTH, TEXT_WIDTH, ERROR_COLOR, REPORT_PAGE };

@@ -2,6 +2,7 @@ import { on, emit, showUI } from "@create-figma-plugin/utilities";
 import { addNote } from "./addNote";
 import { addFrame } from "./addFrame";
 import { buildReport } from "./report-building-functions/buildReport";
+import { REPORT_PAGE } from "./constants";
 
 const loadFonts = async () => {
   await figma.loadFontAsync({ family: "Inter", style: "Regular" });
@@ -88,8 +89,46 @@ export default async function () {
   });
 
   on("EXPORT_PDF", async () => {
+    const reportFrame = findReportFrame();
+    if (!reportFrame) {
+      return;
+    }
+
+    const pdf = await reportFrame.exportAsync({
+      format: "PDF",
+    });
+    if (!pdf) {
+      console.log("PDF export failed");
+      return;
+    }
+    emit("PDF", pdf);
+  });
+
+  on("EXPORT_MULTIPAGE_PDF", async () => {
+    const reportFrame = findReportFrame();
+    if (!reportFrame) {
+      return;
+    }
+
+    const pages: Uint8Array[] = [];
+
+    for (const child of reportFrame.children) {
+      const pdf = await child.exportAsync({
+        format: "PDF",
+      });
+      if (!pdf) {
+        console.log("PDF export failed");
+        return;
+      }
+      pages.push(pdf);
+    }
+
+    emit("PDF_MULTIPAGE", pages);
+  });
+
+  function findReportFrame() {
     const reportPage = figma.root.children.find(
-      (page) => page.name === "📊 Audit result"
+      (page) => page.name === REPORT_PAGE
     );
     if (!reportPage) {
       console.log("Report page not found");
@@ -102,17 +141,9 @@ export default async function () {
       console.log("Report frame not found");
       return;
     }
-
     reportFrame.layoutMode = "VERTICAL";
-    const pdf = await reportFrame.exportAsync({
-      format: "PDF",
-    });
-    if (!pdf) {
-      console.log("PDF export failed");
-      return;
-    }
-    emit("PDF", pdf);
-  });
+    return reportFrame;
+  }
 
   function checkSelection(selection: readonly SceneNode[]): boolean {
     if (selection.length === 0) {
