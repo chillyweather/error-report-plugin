@@ -5,14 +5,14 @@ import { buildLayoutFrames } from "./buildLayoutFrames";
 import { buildNotesElement } from "./buildNotesElement";
 import { buildScreenShotFrame } from "./buildScreenShotFrame";
 import { buildTextDataFrame } from "./buildTextDataFrame";
+
 export async function buildReport(selction: readonly SceneNode[]) {
+  const PAGE_NAME = "📊 Audit result";
   const document = figma.root;
-  let reportPage = figma.root.children.find(
-    (page) => page.name === "audit result"
-  );
+  let reportPage = figma.root.children.find((page) => page.name === PAGE_NAME);
   if (!reportPage) {
     reportPage = figma.createPage();
-    reportPage.name = "📊 Audit result";
+    reportPage.name = PAGE_NAME;
   }
   const keys = document.getPluginDataKeys();
 
