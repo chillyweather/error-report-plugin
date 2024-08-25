@@ -12,7 +12,7 @@ export async function buildReport(selction: readonly SceneNode[]) {
   );
   if (!reportPage) {
     reportPage = figma.createPage();
-    reportPage.name = "audit result";
+    reportPage.name = "📊 Audit result";
   }
   const keys = document.getPluginDataKeys();
 

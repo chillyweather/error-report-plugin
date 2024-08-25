@@ -19,6 +19,7 @@ const allowedTypes = [
 export default async function () {
   await loadFonts();
   const document = figma.root;
+
   let selection = figma.currentPage.selection;
   let isSelectionValid: boolean;
 
