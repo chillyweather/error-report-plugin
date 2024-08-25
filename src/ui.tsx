@@ -89,6 +89,17 @@ function Plugin() {
     setIsSelection(false);
   });
 
+  on("PDF", (pdf: Uint8Array) => {
+    console.log("pdf sent");
+    const blob = new Blob([pdf], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "report.pdf";
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
   return (
     <Container space="medium">
       <VerticalSpace space="large" />
@@ -164,7 +175,31 @@ function Plugin() {
         <VerticalSpace space="extraLarge" />
         <Button fullWidth onClick={handleReport}>
           Generate report
-        </Button>{" "}
+        </Button>
+        <VerticalSpace space="medium" />
+        <Button
+          fullWidth
+          onClick={() => {
+            emit("EXPORT_PDF");
+          }}
+          style={{
+            backgroundColor: "#468079",
+          }}
+        >
+          Export report (as one page)
+        </Button>
+        <VerticalSpace space="medium" />
+        <Button
+          fullWidth
+          onClick={() => {
+            emit("EXPORT_PDF");
+          }}
+          style={{
+            backgroundColor: "#417EAA",
+          }}
+        >
+          Export report (multi-page)
+        </Button>
         <VerticalSpace space="medium" />
         <Button
           fullWidth
@@ -173,7 +208,7 @@ function Plugin() {
             backgroundColor: "#C11700",
           }}
         >
-          Erase report
+          Erase report (double click)
         </Button>
       </div>
     </Container>

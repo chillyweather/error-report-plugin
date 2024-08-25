@@ -1,4 +1,5 @@
 import { buildAutoLayoutFrame } from "./buildAutoLayoutFrame";
+import { ERROR_COLOR, TEXT_WIDTH } from "../constants";
 
 export function buildTextDataFrame(
   key: string,
@@ -8,8 +9,6 @@ export function buildTextDataFrame(
   noteCharacters: string,
   nodeId: string
 ) {
-  const TEXT_WIDTH = 464;
-  console.log("nodeId", nodeId);
   const textDataFrame = buildAutoLayoutFrame(key, "VERTICAL", 0, 0, 24);
 
   if (title) {
@@ -27,20 +26,7 @@ export function buildTextDataFrame(
       };
     } catch (error) {
       noteTitle.characters = `${noteTitle.characters} (no element with id ${nodeId} found)`;
-      noteTitle.fills = [
-        {
-          type: "SOLID",
-          visible: true,
-          opacity: 1,
-          blendMode: "NORMAL",
-          color: {
-            r: 1,
-            g: 0,
-            b: 0,
-          },
-          boundVariables: {},
-        },
-      ];
+      noteTitle.fills = ERROR_COLOR as readonly Paint[];
     }
     noteTitle.resize(TEXT_WIDTH, noteTitle.height);
     textDataFrame.appendChild(noteTitle);

@@ -87,6 +87,33 @@ export default async function () {
     const reportFrame = await buildReport(selection);
   });
 
+  on("EXPORT_PDF", async () => {
+    const reportPage = figma.root.children.find(
+      (page) => page.name === "📊 Audit result"
+    );
+    if (!reportPage) {
+      console.log("Report page not found");
+      return;
+    }
+    const reportFrame = reportPage.children.find(
+      (frame) => frame.name === "report-frame"
+    );
+    if (!(reportFrame && reportFrame.type === "FRAME")) {
+      console.log("Report frame not found");
+      return;
+    }
+
+    reportFrame.layoutMode = "VERTICAL";
+    const pdf = await reportFrame.exportAsync({
+      format: "PDF",
+    });
+    if (!pdf) {
+      console.log("PDF export failed");
+      return;
+    }
+    emit("PDF", pdf);
+  });
+
   function checkSelection(selection: readonly SceneNode[]): boolean {
     if (selection.length === 0) {
       figma.notify("Please select at least one node");
@@ -132,7 +159,7 @@ export default async function () {
 }
 
 showUI({
-  height: 430,
+  height: 524,
   width: 400,
 });
 

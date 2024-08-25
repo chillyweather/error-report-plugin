@@ -86,7 +86,7 @@ async function buildOneReportElementFrame(
   const screenShotFrame = await buildScreenShotFrame(nodeId);
   const reportElementFrame = buildAutoLayoutFrame(key, "HORIZONTAL", 0, 0, 190);
   reportElementFrame.appendChild(textDataFrame);
-  reportElementFrame.appendChild(screenShotFrame);
+  if (screenShotFrame) reportElementFrame.appendChild(screenShotFrame);
   reportElementFrame.appendChild(notesFrame);
   return reportElementFrame;
 }
