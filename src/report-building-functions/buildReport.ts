@@ -29,6 +29,8 @@ export async function buildReport(selction: readonly SceneNode[]) {
     lowFrame
   );
 
+  reportPage.appendChild(reportFrame);
+
   for (const key of keys) {
     const [nodeId, severity] = key.split("_");
     const value = document.getPluginData(key);
