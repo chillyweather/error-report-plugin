@@ -8,7 +8,7 @@ import {
   TextboxMultiline,
   VerticalSpace,
 } from "@create-figma-plugin/ui";
-import { PDFDocument } from "pdf-lib";
+
 import { emit, on } from "@create-figma-plugin/utilities";
 import { h } from "preact";
 import { useEffect, useState } from "preact/hooks";
@@ -16,6 +16,7 @@ import { useAtom } from "jotai";
 import { noteAtom } from "./atoms";
 import { Dropdown, DropdownOption } from "tidy-ds";
 import { dropdownOptions } from "./DropdownOptions";
+import { createMultiPagePdf } from "./createMultiPagePdf";
 
 function Plugin() {
   const [note, setNote] = useAtom(noteAtom);
@@ -112,35 +113,6 @@ function Plugin() {
   on("PDF_MULTIPAGE", async (pdfArrays: Uint8Array[]) => {
     createMultiPagePdf(pdfArrays);
   });
-
-  async function createMultiPagePdf(pdfPagesData: Uint8Array[]) {
-    const mergedPdf = await PDFDocument.create();
-
-    for (const pdfPageData of pdfPagesData) {
-      const pdfDoc = await PDFDocument.load(pdfPageData);
-      const [copiedPage] = await mergedPdf.copyPages(pdfDoc, [0]);
-      mergedPdf.addPage(copiedPage);
-    }
-
-    const mergedPdfBytes = await mergedPdf.save();
-
-    const blob = new Blob([mergedPdfBytes], { type: "application/pdf" });
-    const downloadLink = document.createElement("a");
-    downloadLink.href = URL.createObjectURL(blob);
-    downloadLink.download = "Audit result.pdf";
-
-    downloadLink.click();
-  }
-
-  function arrayBufferToBase64(buffer: ArrayBuffer): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const blob = new Blob([buffer], { type: "application/pdf" });
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
-    });
-  }
 
   return (
     <Container space="medium">
