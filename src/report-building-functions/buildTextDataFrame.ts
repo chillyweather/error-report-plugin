@@ -13,7 +13,7 @@ export function buildTextDataFrame(
 
   if (title) {
     const noteTitle = figma.createText();
-    noteTitle.characters = title;
+    noteTitle.characters = `• ${title}`;
     noteTitle.fontName = {
       family: "Inter",
       style: "Regular",

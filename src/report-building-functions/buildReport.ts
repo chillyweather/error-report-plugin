@@ -107,10 +107,9 @@ function appendSections(
     { frame: lowFrame, name: "Low" },
   ];
 
-  framesToAppend.forEach(({ frame, name }) => {
+  framesToAppend.forEach(({ frame }) => {
     if (frame) {
       appendAndResize(frame, reportFrame, REPORT_FRAME_WIDTH, frame.height);
-      console.log(`${name} frame appended and resized`);
     }
   });
 }
