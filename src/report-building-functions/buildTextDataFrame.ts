@@ -9,11 +9,11 @@ export function buildTextDataFrame(
   noteCharacters: string,
   nodeId: string
 ) {
-  const textDataFrame = buildAutoLayoutFrame(key, "VERTICAL", 0, 0, 24);
+  const textDataFrame = buildAutoLayoutFrame("text-data", "VERTICAL", 0, 0, 24);
 
   if (title) {
     const noteTitle = figma.createText();
-    noteTitle.characters = `• ${title}`;
+    noteTitle.characters = `•. ${title}`;
     noteTitle.fontName = {
       family: "Inter",
       style: "Regular",

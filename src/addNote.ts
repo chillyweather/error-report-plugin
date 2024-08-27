@@ -1,11 +1,11 @@
 import { buildAutoLayoutFrame } from "./buildAutoLayoutFrame";
 
-export function addNote(selection: SceneNode, type: string) {
+export function addNote(element: SceneNode, type: string) {
   const note = buildAutoLayoutFrame("admin-note", "VERTICAL", 20, 20, 16);
-  note.name = "admin-note";
-  note.resize(selection.width, 200);
-  note.x = selection.x;
-  note.y = selection.y + selection.height + 32;
+  note.name = `${element.id}-note`;
+  note.resize(element.width, 200);
+  note.x = element.x;
+  note.y = element.y + element.height + 32;
   if (type === "critical") {
     note.fills = [
       {

@@ -1,4 +1,4 @@
-import { REPORT_FRAME_WIDTH } from "../constants";
+import { REPORT_FRAME_WIDTH, REPORT_PAGE } from "../constants";
 import { buildAutoLayoutFrame } from "./buildAutoLayoutFrame";
 import { buildHeaderFrame } from "./buildHeaderFrame";
 import { buildLayoutFrames } from "./buildLayoutFrames";
@@ -7,13 +7,21 @@ import { buildScreenShotFrame } from "./buildScreenShotFrame";
 import { buildTextDataFrame } from "./buildTextDataFrame";
 
 export async function buildReport(selction: readonly SceneNode[]) {
-  const PAGE_NAME = "📊 Audit result";
   const document = figma.root;
-  let reportPage = figma.root.children.find((page) => page.name === PAGE_NAME);
+  let reportPage = figma.root.children.find(
+    (page) => page.name === REPORT_PAGE
+  );
   if (!reportPage) {
     reportPage = figma.createPage();
-    reportPage.name = PAGE_NAME;
+    reportPage.name = REPORT_PAGE;
   }
+  const existingReportFrame = reportPage.findChild(
+    (frame) => frame.name === "report-frame"
+  );
+  if (existingReportFrame) {
+    existingReportFrame.remove();
+  }
+
   const keys = document.getPluginDataKeys();
 
   const headerFrame = buildHeaderFrame(keys);
@@ -49,19 +57,58 @@ export async function buildReport(selction: readonly SceneNode[]) {
       nodeId
     );
 
-    if (textContentJSON.severity === "critical" && criticalFrame) {
-      criticalFrame.appendChild(reportElementFrame);
-    } else if (textContentJSON.severity === "high" && highFrame) {
-      highFrame.appendChild(reportElementFrame);
-    } else if (textContentJSON.severity === "medium" && mediumFrame) {
-      mediumFrame.appendChild(reportElementFrame);
-    } else if (textContentJSON.severity === "low" && lowFrame) {
-      lowFrame.appendChild(reportElementFrame);
-    }
+    appendSectionContent(
+      textContentJSON,
+      criticalFrame,
+      reportElementFrame,
+      highFrame,
+      mediumFrame,
+      lowFrame
+    );
     // document.setPluginData(key, "");
   }
   reportPage.appendChild(reportFrame);
   return reportFrame;
+}
+
+function appendSectionContent(
+  textContentJSON: any,
+  criticalFrame: FrameNode | null,
+  reportElementFrame: FrameNode,
+  highFrame: FrameNode | null,
+  mediumFrame: FrameNode | null,
+  lowFrame: FrameNode | null
+) {
+  if (textContentJSON.severity === "critical" && criticalFrame) {
+    criticalFrame.appendChild(reportElementFrame);
+  } else if (textContentJSON.severity === "high" && highFrame) {
+    highFrame.appendChild(reportElementFrame);
+  } else if (textContentJSON.severity === "medium" && mediumFrame) {
+    mediumFrame.appendChild(reportElementFrame);
+  } else if (textContentJSON.severity === "low" && lowFrame) {
+    lowFrame.appendChild(reportElementFrame);
+  }
+  const ordinalNum = reportElementFrame.parent?.children.length;
+  if (!ordinalNum) return;
+  replaceReportElementBullet(reportElementFrame, ordinalNum - 1);
+}
+
+function replaceReportElementBullet(
+  reportElementFrame: FrameNode,
+  ordinalNum: number
+) {
+  const textToChange = reportElementFrame.findOne(
+    (node) => node.name.startsWith("•") && node.type === "TEXT"
+  ) as TextNode;
+
+  if (textToChange) {
+    const newText = textToChange.characters.replace(
+      /^•/,
+      ordinalNum.toString()
+    );
+    textToChange.characters = newText;
+    textToChange.name = textToChange.name.replace(/^•/, ordinalNum.toString());
+  }
 }
 
 async function buildOneReportElementFrame(
@@ -84,7 +131,13 @@ async function buildOneReportElementFrame(
   const notesFrame = buildNotesElement();
 
   const screenShotFrame = await buildScreenShotFrame(nodeId);
-  const reportElementFrame = buildAutoLayoutFrame(key, "HORIZONTAL", 0, 0, 190);
+  const reportElementFrame = buildAutoLayoutFrame(
+    `re-${key}`,
+    "HORIZONTAL",
+    0,
+    0,
+    190
+  );
   reportElementFrame.appendChild(textDataFrame);
   if (screenShotFrame) reportElementFrame.appendChild(screenShotFrame);
   reportElementFrame.appendChild(notesFrame);

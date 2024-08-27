@@ -1,13 +1,13 @@
 import { computeMaximumBounds } from "@create-figma-plugin/utilities";
 
-export function addFrame(selection: SceneNode, type: string) {
-  const [topLeft, bottomRight] = computeMaximumBounds([selection]);
+export function addFrame(element: SceneNode, type: string) {
+  const [topLeft, bottomRight] = computeMaximumBounds([element]);
   const width = bottomRight.x - topLeft.x;
   const height = bottomRight.y - topLeft.y;
 
   const frame = figma.createFrame();
-  selection.parent?.appendChild(frame);
-  frame.name = `${type} ${selection.name}`;
+  element.parent?.appendChild(frame);
+  frame.name = `${element.id}-highlight`;
   frame.x = topLeft.x;
   frame.y = topLeft.y;
   frame.resize(width, height);

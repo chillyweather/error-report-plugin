@@ -80,6 +80,11 @@ function Plugin() {
   const handleReport = () => {
     emit("REPORT");
   };
+
+  const handleUpdateFromCanvas = () => {
+    emit("UPDATE_FROM_CANVAS");
+  };
+
   const handleEraseReport = () => {
     emit("ERASE");
   };
@@ -209,6 +214,16 @@ function Plugin() {
           }}
         >
           Export report (multi-page)
+        </Button>
+        <VerticalSpace space="medium" />
+        <Button
+          fullWidth
+          onClick={handleUpdateFromCanvas}
+          style={{
+            backgroundColor: "#800582",
+          }}
+        >
+          Update from canvas ↑
         </Button>
         <VerticalSpace space="medium" />
         <Button

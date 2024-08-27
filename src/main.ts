@@ -3,6 +3,7 @@ import { addNote } from "./addNote";
 import { addFrame } from "./addFrame";
 import { buildReport } from "./report-building-functions/buildReport";
 import { REPORT_PAGE } from "./constants";
+import { updateFromCanvas } from "./report-building-functions/updateFromCanvas";
 
 const loadFonts = async () => {
   await figma.loadFontAsync({ family: "Inter", style: "Regular" });
@@ -126,6 +127,10 @@ export default async function () {
     emit("PDF_MULTIPAGE", pages);
   });
 
+  on("UPDATE_FROM_CANVAS", () => {
+    updateFromCanvas();
+  });
+
   function findReportFrame() {
     const reportPage = figma.root.children.find(
       (page) => page.name === REPORT_PAGE
@@ -190,7 +195,7 @@ export default async function () {
 }
 
 showUI({
-  height: 524,
+  height: 568,
   width: 400,
 });
 
