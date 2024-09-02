@@ -33,7 +33,7 @@ export function buildLayoutFrames(keys: string[]) {
     ? buildAutoLayoutFrame("report-quick-wins", "VERTICAL", 100, 100, 86)
     : null;
   if (quickWinFrame)
-    addSectionTitle("Quick Wins", quickWinFrame, quickWins ?? []);
+    addSectionTitle("Quick Wins", quickWinFrame, quickWins || []);
 
   const criticalFrame = isMajor
     ? buildAutoLayoutFrame("report-critical", "VERTICAL", 100, 100, 86)

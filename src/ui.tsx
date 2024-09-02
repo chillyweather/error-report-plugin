@@ -277,6 +277,16 @@ function Plugin() {
         <VerticalSpace space="medium" />
         <Button
           fullWidth
+          onDblClick={() => {}}
+          style={{
+            backgroundColor: "#c15400",
+          }}
+        >
+          Erase notes on canvas
+        </Button>
+        <VerticalSpace space="medium" />
+        <Button
+          fullWidth
           onDblClick={handleEraseReport}
           style={{
             backgroundColor: "#C11700",

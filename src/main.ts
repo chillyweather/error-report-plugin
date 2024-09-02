@@ -209,7 +209,7 @@ export default async function () {
 }
 
 showUI({
-  height: 616,
+  height: 664,
   width: 400,
 });
 
