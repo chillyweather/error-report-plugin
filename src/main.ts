@@ -4,6 +4,7 @@ import { addFrame } from "./addFrame";
 import { buildReport } from "./report-building-functions/buildReport";
 import { REPORT_PAGE } from "./constants";
 import { updateFromCanvas } from "./report-building-functions/updateFromCanvas";
+import { eraseNotesOnCanvas } from "./report-building-functions/eraseNotesOnCanvas";
 
 const loadFonts = async () => {
   await figma.loadFontAsync({ family: "Inter", style: "Regular" });
@@ -133,6 +134,10 @@ export default async function () {
 
   on("UPDATE_FROM_CANVAS", () => {
     updateFromCanvas();
+  });
+
+  on("ERASE_NOTES_ON_CANVAS", () => {
+    eraseNotesOnCanvas();
   });
 
   function findReportFrame() {

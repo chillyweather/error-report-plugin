@@ -32,24 +32,6 @@ export function updateFromCanvas() {
     }
   }
 
-  function getPage(node: any): PageNode {
-    if (node.type === "PAGE") {
-      return node as PageNode;
-    }
-    if (node.parent) {
-      return getPage(node.parent);
-    }
-    throw new Error("Node is not within a page");
-  }
-
-  function removeNoteAndHighlight(page: PageNode, key: string) {
-    const note = page.findOne((node) => node.name === key + "-note");
-    if (note) note.remove();
-
-    const highlight = page.findOne((node) => node.name === key + "-highlight");
-    if (highlight) highlight.remove();
-  }
-
   function findReportFrame() {
     const reportPage = figma.root.children.find(
       (page) => page.name === REPORT_PAGE
@@ -62,4 +44,22 @@ export function updateFromCanvas() {
     );
     return reportFrame;
   }
+}
+
+export function getPage(node: any): PageNode {
+  if (node.type === "PAGE") {
+    return node as PageNode;
+  }
+  if (node.parent) {
+    return getPage(node.parent);
+  }
+  throw new Error("Node is not within a page");
+}
+
+export function removeNoteAndHighlight(page: PageNode, key: string) {
+  const note = page.findOne((node) => node.name === key + "-note");
+  if (note) note.remove();
+
+  const highlight = page.findOne((node) => node.name === key + "-highlight");
+  if (highlight) highlight.remove();
 }

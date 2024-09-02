@@ -8,7 +8,7 @@ export function buildLayoutFrames(keys: string[]) {
       const textContentJSON = JSON.parse(value);
       return textContentJSON.quickWin ? key : null;
     })
-    .filter((key) => key !== null);
+    .filter((key): key is string => key !== null);
 
   const criticalKeys = keys.filter((key) => key.includes("critical"));
   const highKeys = keys.filter((key) => key.includes("high"));
@@ -32,13 +32,13 @@ export function buildLayoutFrames(keys: string[]) {
   const quickWinFrame = isQuickWins
     ? buildAutoLayoutFrame("report-quick-wins", "VERTICAL", 100, 100, 86)
     : null;
-  if (quickWinFrame)
-    addSectionTitle("Quick Wins", quickWinFrame, quickWins || []);
+  if (quickWinFrame) addSectionTitle("Quick Wins", quickWinFrame, quickWins);
 
   const criticalFrame = isMajor
     ? buildAutoLayoutFrame("report-critical", "VERTICAL", 100, 100, 86)
     : null;
-  if (criticalFrame) addSectionTitle("Critical", criticalFrame, criticalKeys);
+  if (criticalFrame && quickWins)
+    addSectionTitle("Critical", criticalFrame, criticalKeys);
 
   const highFrame = isMinor
     ? buildAutoLayoutFrame("report-heigh", "VERTICAL", 100, 100, 86)

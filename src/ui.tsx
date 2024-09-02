@@ -101,6 +101,10 @@ function Plugin() {
     emit("EXPORT_MULTIPAGE_PDF");
   };
 
+  const handleEraseNotesOnCanvas = () => {
+    emit("ERASE_NOTES_ON_CANVAS");
+  };
+
   on("SELECTION", () => {
     setIsSelection(true);
   });
@@ -277,7 +281,7 @@ function Plugin() {
         <VerticalSpace space="medium" />
         <Button
           fullWidth
-          onDblClick={() => {}}
+          onClick={handleEraseNotesOnCanvas}
           style={{
             backgroundColor: "#c15400",
           }}

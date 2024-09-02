@@ -75,7 +75,6 @@ export async function buildReport() {
       lowFrame,
       quickWinFrame
     );
-    // document.setPluginData(key, "");
   }
   reportPage.appendChild(reportFrame);
   figma.currentPage = reportPage;
