@@ -7,13 +7,14 @@ export function buildTextDataFrame(
   selectedNote: any,
   note: any,
   noteCharacters: string,
-  nodeId: string
+  nodeId: string,
+  isQuickWin: boolean
 ) {
   const textDataFrame = buildAutoLayoutFrame("text-data", "VERTICAL", 0, 0, 24);
 
   if (title) {
     const noteTitle = figma.createText();
-    noteTitle.characters = `•. ${title}`;
+    noteTitle.characters = `•. ${title} 🔗 ${isQuickWin ? "🏆" : ""}`;
     noteTitle.fontName = {
       family: "Inter",
       style: "Regular",

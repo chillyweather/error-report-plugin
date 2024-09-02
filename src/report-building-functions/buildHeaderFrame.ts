@@ -134,7 +134,6 @@ function buildOneLegendRow(level: string, color: string) {
   legendColor.resize(46, 46);
   if (color) {
     const rgbColor = convertHexColorToRgbColor(color);
-    console.log("rgbColor", rgbColor);
     if (rgbColor) {
       legendColor.fills = [
         {

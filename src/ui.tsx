@@ -64,6 +64,10 @@ function Plugin() {
     note: note,
   };
 
+  const handleQuickWinClick = () => {
+    emit("QUICK_WIN");
+  };
+
   const handleMajorNCClick = () => {
     emit("CRITICAL", data);
   };
@@ -156,6 +160,7 @@ function Plugin() {
             style={{
               backgroundColor: "#C4FA8E",
               color: "#515151",
+              width: "100%",
             }}
           >
             Low
@@ -166,6 +171,7 @@ function Plugin() {
             style={{
               backgroundColor: "#FFFF02",
               color: "#515151",
+              width: "100%",
             }}
           >
             Medium
@@ -176,6 +182,7 @@ function Plugin() {
             style={{
               backgroundColor: "#FFBF01",
               color: "#515151",
+              width: "100%",
             }}
           >
             High
@@ -186,12 +193,54 @@ function Plugin() {
             style={{
               backgroundColor: "#FD8181",
               color: "#515151",
+              width: "100%",
             }}
           >
             Critical
           </Button>
+          {/* <Button
+            fullWidth
+            onClick={() => {}}
+            style={{
+              backgroundColor: "#a8a8a8",
+              width: "100%",
+            }}
+          >
+            C1
+          </Button>
+          <Button
+            fullWidth
+            onClick={() => {}}
+            style={{
+              backgroundColor: "#a8a8a8",
+              width: "100%",
+            }}
+          >
+            C2
+          </Button>
+          <Button
+            fullWidth
+            onClick={() => {}}
+            style={{
+              backgroundColor: "#a8a8a8",
+              width: "100%",
+            }}
+          >
+            C3
+          </Button> */}
         </Columns>
         <VerticalSpace space="extraLarge" />
+        <Button
+          fullWidth
+          onClick={handleQuickWinClick}
+          style={{
+            backgroundColor: "#ffcc84",
+            color: "#2d2d2d",
+          }}
+        >
+          Quick win 🏆
+        </Button>
+        <VerticalSpace space="medium" />
         <Button fullWidth onClick={handleReport}>
           Generate report
         </Button>

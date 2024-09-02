@@ -23,13 +23,12 @@ export function updateFromCanvas() {
   for (const key in keys) {
     const foundKey = keys[key];
     if (!framesForUpdateNames.includes(foundKey)) {
-      // const nodeId = foundKey.split("_")[0];
-      // const node = figma.getNodeById(nodeId);
-      // const currentPage = getPage(node);
-      // removeNoteAndHighlight(currentPage, nodeId);
+      const nodeId = foundKey.split("_")[0];
+      const node = figma.getNodeById(nodeId);
+      const currentPage = getPage(node);
+      removeNoteAndHighlight(currentPage, nodeId);
 
       figma.root.setPluginData(foundKey, "");
-      // removeNoteAndHighlight(foundKey);
     }
   }
 
@@ -44,12 +43,10 @@ export function updateFromCanvas() {
   }
 
   function removeNoteAndHighlight(page: PageNode, key: string) {
-    const note = figma.root.findOne((node) => node.name === key + "-note");
+    const note = page.findOne((node) => node.name === key + "-note");
     if (note) note.remove();
 
-    const highlight = figma.root.findOne(
-      (node) => node.name === key + "-highlight"
-    );
+    const highlight = page.findOne((node) => node.name === key + "-highlight");
     if (highlight) highlight.remove();
   }
 

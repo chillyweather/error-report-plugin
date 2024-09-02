@@ -1,4 +1,4 @@
-import { REPORT_FRAME_WIDTH, REPORT_PAGE } from "../constants";
+import { REPORT_FRAME_WIDTH, REPORT_PAGE, SEVERITY_LEVELS } from "../constants";
 import { buildAutoLayoutFrame } from "./buildAutoLayoutFrame";
 import { buildHeaderFrame } from "./buildHeaderFrame";
 import { buildLayoutFrames } from "./buildLayoutFrames";
@@ -6,7 +6,7 @@ import { buildNotesElement } from "./buildNotesElement";
 import { buildScreenShotFrame } from "./buildScreenShotFrame";
 import { buildTextDataFrame } from "./buildTextDataFrame";
 
-export async function buildReport(selction: readonly SceneNode[]) {
+export async function buildReport() {
   const document = figma.root;
   let reportPage = figma.root.children.find(
     (page) => page.name === REPORT_PAGE
@@ -25,8 +25,14 @@ export async function buildReport(selction: readonly SceneNode[]) {
   const keys = document.getPluginDataKeys();
 
   const headerFrame = buildHeaderFrame(keys);
-  const { criticalFrame, reportFrame, highFrame, mediumFrame, lowFrame } =
-    buildLayoutFrames(keys);
+  const {
+    criticalFrame,
+    reportFrame,
+    highFrame,
+    mediumFrame,
+    lowFrame,
+    quickWinFrame,
+  } = buildLayoutFrames(keys);
 
   appendSections(
     headerFrame,
@@ -34,7 +40,8 @@ export async function buildReport(selction: readonly SceneNode[]) {
     reportFrame,
     highFrame,
     mediumFrame,
-    lowFrame
+    lowFrame,
+    quickWinFrame
   );
 
   for (const key of keys) {
@@ -44,6 +51,7 @@ export async function buildReport(selction: readonly SceneNode[]) {
     const title = textContentJSON.title;
     const selectedNote = textContentJSON.selectedNote;
     const note = textContentJSON.note;
+    const isQuickWin = textContentJSON.quickWin || false;
     const noteCharacters = `${selectedNote ? selectedNote + "\n" : ""}${
       note ?? ""
     }`;
@@ -54,7 +62,8 @@ export async function buildReport(selction: readonly SceneNode[]) {
       selectedNote,
       note,
       noteCharacters,
-      nodeId
+      nodeId,
+      isQuickWin
     );
 
     appendSectionContent(
@@ -63,11 +72,14 @@ export async function buildReport(selction: readonly SceneNode[]) {
       reportElementFrame,
       highFrame,
       mediumFrame,
-      lowFrame
+      lowFrame,
+      quickWinFrame
     );
     // document.setPluginData(key, "");
   }
   reportPage.appendChild(reportFrame);
+  figma.currentPage = reportPage;
+  figma.viewport.scrollAndZoomIntoView([reportFrame]);
   return reportFrame;
 }
 
@@ -77,7 +89,8 @@ function appendSectionContent(
   reportElementFrame: FrameNode,
   highFrame: FrameNode | null,
   mediumFrame: FrameNode | null,
-  lowFrame: FrameNode | null
+  lowFrame: FrameNode | null,
+  quickWinFrame: FrameNode | null
 ) {
   if (textContentJSON.severity === "critical" && criticalFrame) {
     criticalFrame.appendChild(reportElementFrame);
@@ -87,6 +100,11 @@ function appendSectionContent(
     mediumFrame.appendChild(reportElementFrame);
   } else if (textContentJSON.severity === "low" && lowFrame) {
     lowFrame.appendChild(reportElementFrame);
+  }
+  if (textContentJSON.quickWin && quickWinFrame) {
+    const clonedFrame = reportElementFrame.clone();
+    replaceReportElementBulletWithStatus(clonedFrame, textContentJSON.severity);
+    quickWinFrame.appendChild(clonedFrame);
   }
   const ordinalNum = reportElementFrame.parent?.children.length;
   if (!ordinalNum) return;
@@ -111,13 +129,35 @@ function replaceReportElementBullet(
   }
 }
 
+function replaceReportElementBulletWithStatus(
+  reportElementFrame: FrameNode,
+  status: string
+) {
+  const currentSeverityData =
+    SEVERITY_LEVELS[status.toUpperCase() as keyof typeof SEVERITY_LEVELS];
+  const textToChange = reportElementFrame.findOne(
+    (node) => node.name.startsWith("•") && node.type === "TEXT"
+  ) as TextNode;
+  if (textToChange) {
+    const newText = textToChange.characters.replace(
+      /^•\./,
+      currentSeverityData.symbol
+    );
+    textToChange.characters = newText;
+    textToChange.name = textToChange.name.replace(
+      /^•\./,
+      currentSeverityData.symbol
+    );
+  }
+}
 async function buildOneReportElementFrame(
   key: string,
   title: any,
   selectedNote: any,
   note: any,
   noteCharacters: string,
-  nodeId: string
+  nodeId: string,
+  isQuickWin: boolean
 ) {
   const textDataFrame = buildTextDataFrame(
     key,
@@ -125,7 +165,8 @@ async function buildOneReportElementFrame(
     selectedNote,
     note,
     noteCharacters,
-    nodeId
+    nodeId,
+    isQuickWin
   );
 
   const notesFrame = buildNotesElement();
@@ -150,10 +191,12 @@ function appendSections(
   reportFrame: FrameNode,
   highFrame: FrameNode | null,
   mediumFrame: FrameNode | null,
-  lowFrame: FrameNode | null
+  lowFrame: FrameNode | null,
+  quickWinFrame: FrameNode | null
 ) {
   const framesToAppend = [
     { frame: headerFrame, name: "Header" },
+    { frame: quickWinFrame, name: "Quick Win" },
     { frame: criticalFrame, name: "Critical" },
     { frame: highFrame, name: "High" },
     { frame: mediumFrame, name: "Medium" },

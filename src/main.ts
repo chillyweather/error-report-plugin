@@ -65,18 +65,22 @@ export default async function () {
   });
 
   on("LOW", (data) => {
-    console.log("selection[0].type", selection[0].type);
-    console.log(
-      "selection[0].type in allowedTypes",
-      selection[0].type in allowedTypes
-    );
     isSelectionValid = checkSelection(selection);
-    console.log("isSelectionValid", isSelectionValid);
     if (!isSelectionValid) {
       return;
     }
     selection.forEach((element) => {
       handleNoteData(element, data, "low");
+    });
+  });
+
+  on("QUICK_WIN", (data) => {
+    isSelectionValid = checkSelection(selection);
+    if (!isSelectionValid) {
+      return;
+    }
+    selection.forEach((element) => {
+      handleAddQuickWin(element);
     });
   });
 
@@ -86,7 +90,7 @@ export default async function () {
   });
 
   on("REPORT", async () => {
-    const reportFrame = await buildReport(selection);
+    await buildReport();
   });
 
   on("EXPORT_PDF", async () => {
@@ -164,6 +168,16 @@ export default async function () {
     return true;
   }
 
+  function handleAddQuickWin(element: SceneNode) {
+    document.getPluginDataKeys().forEach((key) => {
+      if (key.includes(`${element.id}`)) {
+        const data = JSON.parse(document.getPluginData(key));
+        data.quickWin = true;
+        document.setPluginData(key, JSON.stringify(data));
+      }
+    });
+  }
+
   function handleNoteData(element: SceneNode, data: any, type: string) {
     data.link = {
       type: "NODE",
@@ -195,7 +209,7 @@ export default async function () {
 }
 
 showUI({
-  height: 568,
+  height: 616,
   width: 400,
 });
 
