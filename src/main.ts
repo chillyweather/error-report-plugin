@@ -5,7 +5,7 @@ import { buildReport } from "./report-building-functions/buildReport";
 import { REPORT_PAGE } from "./constants";
 import { updateFromCanvas } from "./report-building-functions/updateFromCanvas";
 import { eraseNotesOnCanvas } from "./report-building-functions/eraseNotesOnCanvas";
-import { exportCSV } from "./report-building-functions/exportCSV";
+import { exportDataForCSV } from "./report-building-functions/exportDataForCSV";
 
 const loadFonts = async () => {
   await figma.loadFontAsync({ family: "Inter", style: "Regular" });
@@ -134,7 +134,7 @@ export default async function () {
   });
 
   on("EXPORT_CSV", () => {
-    exportCSV();
+    exportDataForCSV();
   });
 
   on("UPDATE_FROM_CANVAS", () => {

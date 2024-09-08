@@ -1,5 +1,5 @@
 import { emit } from "@create-figma-plugin/utilities";
-export function exportCSV() {
+export function exportDataForCSV() {
   const document = figma.root;
   const savedData: any = {};
   const keys = document.getSharedPluginDataKeys("audit");

@@ -17,6 +17,7 @@ import { noteAtom } from "./atoms";
 import { Dropdown, DropdownOption } from "tidy-ds";
 import { dropdownOptions } from "./DropdownOptions";
 import { createMultiPagePdf } from "./createMultiPagePdf";
+import { Data, exportCsv } from "./exportCSV";
 
 function Plugin() {
   const [note, setNote] = useAtom(noteAtom);
@@ -27,6 +28,7 @@ function Plugin() {
   const [predefinedNotes, setPredefinedNotes] = useState<DropdownOption[]>([]);
   const [selectedNote, setSelectedNote] = useState<DropdownOption | null>(null);
   const [reportDataForCSV, setReportDataForCSV] = useState<any>(null);
+  const [downloadCSV, setDownloadCSV] = useState<boolean>(false);
 
   const sections = dropdownOptions.map((options, index) => {
     const sectionTitle = Object.keys(options)[0];
@@ -60,11 +62,12 @@ function Plugin() {
   }, [selectedSection]);
 
   useEffect(() => {
-    if (reportDataForCSV) {
+    if (reportDataForCSV && downloadCSV) {
       //convert to csv
-      console.log("reportDataForCSV", reportDataForCSV);
+      exportCsv(reportDataForCSV as Data);
+      setDownloadCSV(false);
     }
-  }, [reportDataForCSV]);
+  }, [reportDataForCSV, downloadCSV]);
 
   const data = {
     title: selectedSection?.name,
@@ -111,6 +114,7 @@ function Plugin() {
 
   const handleExportCSV = () => {
     emit("EXPORT_CSV");
+    setDownloadCSV(true);
   };
 
   const handleEraseNotesOnCanvas = () => {
