@@ -4,7 +4,7 @@ import { buildAutoLayoutFrame } from "./buildAutoLayoutFrame";
 export function buildLayoutFrames(keys: string[]) {
   const quickWins = keys
     .map((key) => {
-      const value = figma.root.getPluginData(key);
+      const value = figma.root.getSharedPluginData("audit", key);
       const textContentJSON = JSON.parse(value);
       return textContentJSON.quickWin ? key : null;
     })

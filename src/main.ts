@@ -5,6 +5,7 @@ import { buildReport } from "./report-building-functions/buildReport";
 import { REPORT_PAGE } from "./constants";
 import { updateFromCanvas } from "./report-building-functions/updateFromCanvas";
 import { eraseNotesOnCanvas } from "./report-building-functions/eraseNotesOnCanvas";
+import { exportCSV } from "./report-building-functions/exportCSV";
 
 const loadFonts = async () => {
   await figma.loadFontAsync({ family: "Inter", style: "Regular" });
@@ -86,8 +87,8 @@ export default async function () {
   });
 
   on("ERASE", () => {
-    const keys = figma.root.getPluginDataKeys();
-    keys.forEach((key) => figma.root.setPluginData(key, ""));
+    const keys = figma.root.getSharedPluginDataKeys("audit");
+    keys.forEach((key) => figma.root.setSharedPluginData("audit", key, ""));
   });
 
   on("REPORT", async () => {
@@ -132,6 +133,10 @@ export default async function () {
     emit("PDF_MULTIPAGE", pages);
   });
 
+  on("EXPORT_CSV", () => {
+    exportCSV();
+  });
+
   on("UPDATE_FROM_CANVAS", () => {
     updateFromCanvas();
   });
@@ -174,11 +179,11 @@ export default async function () {
   }
 
   function handleAddQuickWin(element: SceneNode) {
-    document.getPluginDataKeys().forEach((key) => {
+    document.getSharedPluginDataKeys("audit").forEach((key) => {
       if (key.includes(`${element.id}`)) {
-        const data = JSON.parse(document.getPluginData(key));
+        const data = JSON.parse(document.getSharedPluginData("audit", key));
         data.quickWin = true;
-        document.setPluginData(key, JSON.stringify(data));
+        document.setSharedPluginData("audit", key, JSON.stringify(data));
       }
     });
   }
@@ -190,7 +195,11 @@ export default async function () {
     };
     data.severity = type;
 
-    document.setPluginData(`${element.id}_${type}`, JSON.stringify(data));
+    document.setSharedPluginData(
+      "audit",
+      `${element.id}_${type}`,
+      JSON.stringify(data)
+    );
 
     addFrame(element, type);
     const note = addNote(element, type);
@@ -214,7 +223,7 @@ export default async function () {
 }
 
 showUI({
-  height: 664,
+  height: 712,
   width: 400,
 });
 

@@ -26,6 +26,7 @@ function Plugin() {
   );
   const [predefinedNotes, setPredefinedNotes] = useState<DropdownOption[]>([]);
   const [selectedNote, setSelectedNote] = useState<DropdownOption | null>(null);
+  const [reportDataForCSV, setReportDataForCSV] = useState<any>(null);
 
   const sections = dropdownOptions.map((options, index) => {
     const sectionTitle = Object.keys(options)[0];
@@ -57,6 +58,13 @@ function Plugin() {
       setPredefinedNotes(sectionData);
     }
   }, [selectedSection]);
+
+  useEffect(() => {
+    if (reportDataForCSV) {
+      //convert to csv
+      console.log("reportDataForCSV", reportDataForCSV);
+    }
+  }, [reportDataForCSV]);
 
   const data = {
     title: selectedSection?.name,
@@ -101,6 +109,10 @@ function Plugin() {
     emit("EXPORT_MULTIPAGE_PDF");
   };
 
+  const handleExportCSV = () => {
+    emit("EXPORT_CSV");
+  };
+
   const handleEraseNotesOnCanvas = () => {
     emit("ERASE_NOTES_ON_CANVAS");
   };
@@ -125,6 +137,10 @@ function Plugin() {
 
   on("PDF_MULTIPAGE", async (pdfArrays: Uint8Array[]) => {
     createMultiPagePdf(pdfArrays);
+  });
+
+  on("EXPORT_CSV", (savedData: any) => {
+    setReportDataForCSV(savedData);
   });
 
   return (
@@ -267,6 +283,16 @@ function Plugin() {
           }}
         >
           Export report (multi-page)
+        </Button>
+        <VerticalSpace space="medium" />
+        <Button
+          fullWidth
+          onClick={handleExportCSV}
+          style={{
+            backgroundColor: "#1f1ab5",
+          }}
+        >
+          Export report (CSV)
         </Button>
         <VerticalSpace space="medium" />
         <Button

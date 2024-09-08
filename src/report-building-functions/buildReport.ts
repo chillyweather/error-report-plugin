@@ -22,7 +22,7 @@ export async function buildReport() {
     existingReportFrame.remove();
   }
 
-  const keys = document.getPluginDataKeys();
+  const keys = document.getSharedPluginDataKeys("audit");
 
   const headerFrame = buildHeaderFrame(keys);
   const {
@@ -46,7 +46,7 @@ export async function buildReport() {
 
   for (const key of keys) {
     const [nodeId, severity] = key.split("_");
-    const value = document.getPluginData(key);
+    const value = document.getSharedPluginData("audit", key);
     const textContentJSON = JSON.parse(value);
     const title = textContentJSON.title;
     const selectedNote = textContentJSON.selectedNote;

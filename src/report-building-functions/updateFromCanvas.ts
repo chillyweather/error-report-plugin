@@ -5,7 +5,7 @@ export function updateFromCanvas() {
     return;
   }
 
-  const keys = figma.root.getPluginDataKeys();
+  const keys = figma.root.getSharedPluginDataKeys("audit");
   const framesForUpdateNames: string[] = [];
 
   const framesForUpdate = reportFrame.findAll((node) =>
@@ -28,7 +28,7 @@ export function updateFromCanvas() {
       const currentPage = getPage(node);
       removeNoteAndHighlight(currentPage, nodeId);
 
-      figma.root.setPluginData(foundKey, "");
+      figma.root.setSharedPluginData("audit", foundKey, "");
     }
   }
 
